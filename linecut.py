@@ -126,7 +126,7 @@ class Linecut(QtGui.QDialog):
         if event.inaxes and event.button == 2:
             significance = self.sb_significance.value()
             point_type = str(self.cb_point.currentText())
-            print point_type
+            print(point_type)
             if point_type == 'X':
                 coords = eng_format(event.xdata, significance)
             elif point_type == 'Y':
@@ -228,7 +228,7 @@ class Linecut(QtGui.QDialog):
 
             offset = float(self.le_offset.text())
             line = Linetrace(x, y + index * offset, type, position)
-            line.set_color(self.colors.next())
+            line.set_color(next(self.colors))
 
             self.linetraces.append(line)
             self.ax.add_line(line)

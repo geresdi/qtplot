@@ -41,7 +41,7 @@ class DatFile:
         """Pivot the column based data into matrices."""
         # For non-varying ranges we create a series from 0 to N
         def generate_series(column):
-            return pd.Series(range(len(column.values)), column.index)
+            return pd.Series(list(range(len(column.values))), column.index)
 
         # For varying ranges we create a series from Nmin to Nmax
         def create_func(minimum):

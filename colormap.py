@@ -4,7 +4,7 @@ import matplotlib as mpl
 def read_ppm_colormap(filename):
     with open(filename) as f:
         magic = f.readline()
-        size_x, size_y = map(int, f.readline().split())
+        size_x, size_y = list(map(int, f.readline().split()))
         max_val = int(f.readline())
 
         hexstring = f.readline()

@@ -98,7 +98,7 @@ class Operation(QtGui.QWidget):
 
     def set_parameters(self, params):
         """Set all the parameters with a dict containing them."""
-        for name, value in params.iteritems():
+        for name, value in params.items():
             self.set_parameter(name, value)
 
 
@@ -271,7 +271,7 @@ class Operations(QtGui.QDialog):
         with open(filename) as f:
             operations = json.load(f, object_pairs_hook=OrderedDict)
 
-        for name, operation in operations.iteritems():
+        for name, operation in operations.items():
             item = QtGui.QListWidgetItem(name)
             item.setCheckState(QtCore.Qt.Checked)
             op = Operation(name, self.main, *self.items[name])
@@ -290,7 +290,7 @@ class Operations(QtGui.QDialog):
             return
 
         operations = OrderedDict()
-        for i in xrange(self.queue.count()):
+        for i in range(self.queue.count()):
                 operation = self.queue.item(i).data(QtCore.Qt.UserRole).toPyObject()
                 
                 name, params = operation.get_parameters()
@@ -320,7 +320,7 @@ class Operations(QtGui.QDialog):
     def apply_operations(self, data):
         copy = data.copy()
 
-        for i in xrange(self.queue.count()):
+        for i in range(self.queue.count()):
             item = self.queue.item(i)
 
             if item.checkState() == QtCore.Qt.Unchecked:

@@ -1,4 +1,4 @@
-import ConfigParser
+import configparser
 import math
 import matplotlib as mpl
 import matplotlib.pyplot as plt
@@ -270,7 +270,7 @@ class Window(QtGui.QMainWindow):
             path = os.path.dirname(os.path.realpath(__file__))
 
             if os.path.isfile(os.path.join(path, 'qtplot.config')):
-                config = ConfigParser.RawConfigParser()
+                config = configparser.RawConfigParser()
                 path = os.path.dirname(os.path.realpath(__file__))
                 config.read(os.path.join(path, 'qtplot.config'))
 
@@ -336,7 +336,7 @@ class Window(QtGui.QMainWindow):
         try:
             self.data = self.dat_file.get_data(x_name, y_name, data_name, order_x, order_y)
         except Exception:
-            print 'ERROR: Could not pivot the data into a matrix with these columns'
+            print('ERROR: Could not pivot the data into a matrix with these columns')
             return
 
         self.data = self.operations.apply_operations(self.data)
@@ -461,7 +461,7 @@ class Window(QtGui.QMainWindow):
         self.settings.close()
 
         if self.cb_save_default.checkState() == QtCore.Qt.Checked:
-            config = ConfigParser.RawConfigParser()
+            config = configparser.RawConfigParser()
             config.add_section('Settings')
             x_name, y_name, data_name, order_x, order_y = self.get_axis_names()
             config.set('Settings', 'X', x_name)
