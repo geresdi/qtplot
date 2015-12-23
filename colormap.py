@@ -2,15 +2,16 @@ import numpy as np
 import matplotlib as mpl
 
 def read_ppm_colormap(filename):
-    with open(filename) as f:
+    with open(filename, 'rb') as f:
         magic = f.readline()
         size_x, size_y = list(map(int, f.readline().split()))
         max_val = int(f.readline())
+        np.set_printoptions(threshold=np.nan)
 
         hexstring = f.readline()
         pixels = np.fromstring(hexstring, dtype=np.uint8)
 
-        return pixels.reshape((len(pixels) / 3, 3))
+        return pixels.reshape(((len(pixels) +1) / 3, 3))
 
 
 
