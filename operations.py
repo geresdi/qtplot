@@ -226,7 +226,7 @@ class Operations(QtGui.QDialog):
             item = QtGui.QListWidgetItem(name)
             item.setCheckState(QtCore.Qt.Checked)
             operation = Operation(name, self.main, *self.items[name])
-            item.setData(QtCore.Qt.UserRole, QtCore.QVariant(operation))
+            item.setData(QtCore.Qt.UserRole, operation)
             self.stack.addWidget(operation)
 
             self.queue.addItem(item)
@@ -310,7 +310,7 @@ class Operations(QtGui.QDialog):
 
     def on_selected_changed(self, current, previous):
         if current:
-            widget = current.data(QtCore.Qt.UserRole).toPyObject()
+            widget = current.data(QtCore.Qt.UserRole)
             self.stack.addWidget(widget)
             self.stack.setCurrentWidget(widget)
 
@@ -326,7 +326,7 @@ class Operations(QtGui.QDialog):
             if item.checkState() == QtCore.Qt.Unchecked:
                 continue
 
-            operation = item.data(QtCore.Qt.UserRole).toPyObject()
+            operation = item.data(QtCore.Qt.UserRole)
 
             if operation.name == 'hist2d':
                 if operation.get_parameter('bins') == 0:
