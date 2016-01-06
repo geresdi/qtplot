@@ -8,6 +8,14 @@ from matplotlib.ticker import ScalarFormatter
 from scipy.spatial import qhull, delaunay_plot_2d
 from PyQt4 import QtGui, QtCore
 
+
+#imports for OneNote
+import onepy
+import xml.etree.ElementTree as XE
+import dateutil.parser as dtp
+import base64
+from PIL import Image
+
 from util import FixedOrderFormatter
 import os
 
@@ -184,8 +192,36 @@ class ExportWidget(QtGui.QWidget):
         path = os.path.join(path, 'test.png')
         self.fig.savefig(path)
 
-        img = QtGui.QImage(path)
-        QtGui.QApplication.clipboard().setImage(img)
+        on=onepy.OneNote()
+        proc=on.process
+
+        for notebook in on.hierarchy:
+            for section in notebook:
+                for page in section:
+                    if notebook.name == "Test notebook" and section.name == "Test section":
+                        st=proc.get_page_content(page.id, 0)
+
+        c=XE.fromstring(st)
+        
+        f=open(path,'rb')
+        img2=f.read()
+        f.close()
+        img2b=base64.b64encode(img2).decode('utf-8')
+        img=Image.open(path)
+        (w,h)=img.size
+        XE.register_namespace('one', 'http://schemas.microsoft.com/office/onenote/2013/onenote')
+        EL1=XE.Element('{http://schemas.microsoft.com/office/onenote/2013/onenote}Image')
+        EL2=XE.SubElement(EL1, '{http://schemas.microsoft.com/office/onenote/2013/onenote}Size', {'width': str(w/2), 'height': str(h/2)})
+        EL3=XE.SubElement(EL1, '{http://schemas.microsoft.com/office/onenote/2013/onenote}Data')
+        EL3.text=img2b
+        c.append(EL1)
+        if 'lastModifiedTime' in c.attrib:
+            lmt_str=c.attrib['lastModifiedTime']
+            lmt_dt=dtp.parse(lmt_str)
+
+        proc.update_page_content(XE.tostring(c), lmt_dt)
+ #       img = QtGui.QImage(path)
+ #       QtGui.QApplication.clipboard().setImage(img)
 
     def on_export(self):
         path = os.path.dirname(os.path.realpath(__file__))

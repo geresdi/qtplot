@@ -165,7 +165,7 @@ class Linecut(QtGui.QDialog):
         path = os.path.dirname(os.path.realpath(__file__))
         path = os.path.join(path, 'test.png')
         self.fig.savefig(path, bbox_inches='tight')
-
+        
         img = QtGui.QImage(path)
         QtGui.QApplication.clipboard().setImage(img)
 
