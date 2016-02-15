@@ -271,11 +271,23 @@ class Operations(QtGui.QDialog):
         with open(filename) as f:
             operations = json.load(f, object_pairs_hook=OrderedDict)
 
-        for name, operation in operations.items():
+        for i in operations.items():
+            d = i[1]
+            enabled = d['enabled']
+            for k in d:
+                if k != 'enabled':
+                    name = k
+            
+            if name == '':
+                return
+                
             item = QtGui.QListWidgetItem(name)
-            item.setCheckState(QtCore.Qt.Checked)
+            if enabled:
+                item.setCheckState(QtCore.Qt.Checked)
+            else:
+                item.setCheckState(QtCore.Qt.Unchecked)
             op = Operation(name, self.main, *self.items[name])
-            op.set_parameters(operation)
+            op.set_parameters(d[name])
             item.setData(QtCore.Qt.UserRole, op)
             self.stack.addWidget(op)
 
@@ -293,7 +305,9 @@ class Operations(QtGui.QDialog):
         for i in range(self.queue.count()):
                 operation = self.queue.item(i).data(QtCore.Qt.UserRole)                
                 name, params = operation.get_parameters()
-                operations[name] = params
+                enabled = self.queue.item(i).checkState() == QtCore.Qt.Checked
+                operations[i] = {'enabled': enabled}
+                operations[i][name] = params
 
         with open(filename, 'w') as f:
             f.write(json.dumps(operations, indent=4))
