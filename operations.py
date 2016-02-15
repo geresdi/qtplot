@@ -276,7 +276,7 @@ class Operations(QtGui.QDialog):
             item.setCheckState(QtCore.Qt.Checked)
             op = Operation(name, self.main, *self.items[name])
             op.set_parameters(operation)
-            item.setData(QtCore.Qt.UserRole, QtCore.QVariant(op))
+            item.setData(QtCore.Qt.UserRole, op)
             self.stack.addWidget(op)
 
             self.queue.addItem(item)
@@ -291,8 +291,7 @@ class Operations(QtGui.QDialog):
 
         operations = OrderedDict()
         for i in range(self.queue.count()):
-                operation = self.queue.item(i).data(QtCore.Qt.UserRole).toPyObject()
-                
+                operation = self.queue.item(i).data(QtCore.Qt.UserRole)                
                 name, params = operation.get_parameters()
                 operations[name] = params
 
