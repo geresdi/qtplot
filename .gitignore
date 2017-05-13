@@ -4,8 +4,24 @@ test_data/
 *.pptx
 *.pyc
 Thumbs.db
-*.png
+test.png
 *.operations
 *.config
+<<<<<<< HEAD
 .project
 .pydevproject
+=======
+*.ini
+*.dat
+
+# Distribution / packaging
+test.py
+dist
+packaging.bat
+upload.bat
+*.egg-info
+
+# Sublime
+*.sublime-project
+*.sublime-workspace
+>>>>>>> refs/remotes/Rubenknex/master
