@@ -49,6 +49,8 @@ class Linecut(QtGui.QDialog):
 
     def init_ui(self):
         self.setWindowTitle("Linecut")
+        # Don't show this window in the taskbar
+        self.setWindowFlags(QtCore.Qt.Tool)
 
         self.canvas = FigureCanvasQTAgg(self.fig)
         self.canvas.mpl_connect('pick_event', self.on_pick)
@@ -146,6 +148,11 @@ class Linecut(QtGui.QDialog):
 
         self.resize(700, 500)
         self.move(630, 100)
+
+        # This flag is used to reposition the window next to the main window
+        # when drawing the first linecut
+        self.first_linecut = True
+        self.hide()
 
     def populate_ui(self):
         profile = self.main.profile_settings
@@ -359,11 +366,17 @@ class Linecut(QtGui.QDialog):
 
         self.fig.canvas.draw()
 
+        if self.isHidden():
+            self.show_window()
+
     def resizeEvent(self, event):
         self.fig.tight_layout()
         self.canvas.draw()
 
     def show_window(self):
+        if self.first_linecut:
+            self.move(630, 100)
+
         self.show()
         self.raise_()
 

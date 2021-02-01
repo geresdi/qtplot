@@ -5,8 +5,7 @@ from collections import OrderedDict
 import numpy as np
 from scipy import ndimage, interpolate, io
 from scipy.spatial import qhull
-from pandas.io.api import read_table
-import pandas as pd
+import json, codecs
 
 from .util import FixedOrderFormatter, eng_format
 
@@ -25,6 +24,80 @@ class DatFile:
         self.sizes = {}
         self.shape = ()
         self.ndim = 0
+
+        base, ext = os.path.splitext(filename)
+
+        if ext == '.dat':
+            self.load_qtlab_data(self.filename)
+        elif ext == '.json':
+            content = codecs.open(filename, 'r', 'utf-8').read()
+            datafile = json.loads(content)
+
+            data = []
+
+            for key in datafile['data'].keys():
+                if key == 'Datetime':
+                    continue
+
+                self.ids.append(key)
+                self.labels.append(key)
+
+                for coord in datafile['attr']['_coordinates']:
+                    name, size = coord['name'], coord['size']
+
+                    if key == name:
+                        self.shape = self.shape + (size,)
+
+                        if size > 1:
+                            self.sizes[name] = size
+
+                            # Count the number of non-length-1 coordinates
+                            self.ndim += 1
+
+                data.append(datafile['data'][key])
+
+            self.data = np.array(data).T
+
+        elif ext == '.jsonl':
+            try:
+                import pandas as pd
+            except ImportError:
+                logger.error('The pandas module was not found, it is needed to read .jsonl datasets')
+
+            df = pd.DataFrame(list(map(lambda x: json.loads(x) if len(x)>0 else {}, codecs.open(filename).read().split('\n'))))
+
+            data = []
+
+            for column in df.columns:
+                #if column == 'Datetime':
+                #    continue
+
+                self.ids.append(column)
+                self.labels.append(column)
+
+                # The columns with the index are used to determine the grid dimensions
+                if column.startswith('_index'):
+                    size = np.max(df[column].values) - np.min(df[column].values)
+
+                    self.shape = self.shape + (size,)
+
+                    if size > 1:
+                        self.sizes[column] = size
+
+                        # Count the number of non-length-1 coordinates
+                        self.ndim += 1
+
+            self.data = df.values
+        else:
+            logger.error('Unknown file format: %s' % filename)
+
+
+    def load_qtlab_data(self, filename):
+        try:
+            from pandas.io.api import read_table
+        except ImportError:
+            logger.error('The pandas module was not found, it is needed to read QTLab datasets')
+
 
         with open(filename, 'r') as f:
             first_line = f.readline().rstrip('\n\t\r')
@@ -73,8 +146,6 @@ class DatFile:
         self.data = read_table(filename, comment='#', sep='\t',
                                header=None).values
 
-        self.load_qtlab_settings(filename)
-
     def load_qtlab_settings(self, filename):
         self.qtlab_settings = OrderedDict()
 
@@ -112,6 +183,22 @@ class DatFile:
                     self.qtlab_settings[current_instrument].update(new)
         else:
             logger.warning('Could not find settings file %s' % settings_file_name)
+
+    def load_qcodes_data(self, filename):
+        with open(filename, 'r') as f:
+            first_line = f.readline().rstrip('\n\t\r')
+
+            logger.info('Loading QCoDeS file %s' % filename)
+
+            self.ids = first_line.split()[1:]
+
+            column_labels = f.readline().strip()[2:]
+            self.labels = [s[1:-1] for s in column_labels.split('\t')]
+
+            column_sizes = f.readline().strip()[2:]
+            self.shape = tuple(map(int, column_sizes.split('\t')))
+
+            self.ndim = len(self.shape)
 
     def get_column(self, name):
         if name in self.ids:

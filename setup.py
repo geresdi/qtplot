@@ -1,7 +1,9 @@
 from setuptools import setup, find_packages
 
+version = '0.1.4'
+
 setup(name='qtplot',
-      version='0.1.0.dev22',
+      version=version,
       description='Data plotting and analysis tool',
       url='https://github.com/Rubenknex/qtplot',
       author='Ruben van Gulik',
@@ -16,12 +18,12 @@ setup(name='qtplot',
       install_requires=[
         'QtPy',
         'pyopengl',
-        'vispy',
+        'vispy==0.4.0',
       ],
       package_data={
         '': ['*.npy']
       },
       entry_points={
-        'console_scripts': ['qtplot-console = qtplot.qtplot:main'],
-        'gui_scripts': ['qtplot = qtplot.qtplot:main']
+        'console_scripts': ['qtplot-console-%s = qtplot.qtplot:main' % version],
+        'gui_scripts': ['qtplot-%s = qtplot.qtplot:main' % version]
       })

@@ -372,8 +372,8 @@ class QTPlot(QtGui.QMainWindow):
 
         self.setAcceptDrops(True)
 
-        self.linecut.show()
-        self.operations.show()
+        #self.linecut.show()
+        #self.operations.show()
         self.show()
 
     def update_ui(self, reset=True, opening_state=False):
@@ -583,12 +583,10 @@ class QTPlot(QtGui.QMainWindow):
     def get_parameter_names(self):
         if self.dat_file is not None:
             # return list(self.dat_file.df.columns.values)
-            return self.dat_file.ids
+            return sorted(self.dat_file.ids)
         elif self.data_set is not None:
-            # Sort in some kind of order?
-            # Make property of DataSetLite?
-            # TODO: Use full names/labels
-            return list(self.data_set.arrays)
+            # qcodes data set
+            return sorted(list(self.data_set.arrays))
         else:
             return []
 
@@ -656,7 +654,7 @@ class QTPlot(QtGui.QMainWindow):
     def on_load_dat(self, event):
         open_directory = self.profile_settings['open_directory']
         filename = str(QtGui.QFileDialog.getOpenFileName(directory=open_directory,
-                                                         filter='*.dat'))
+                                                         filter='*.dat *.json *.jsonl'))
 
         if filename != "":
             self.load_dat_file(filename)

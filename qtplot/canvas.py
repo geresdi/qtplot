@@ -85,7 +85,7 @@ varying float v_value;
 
 void main()
 {
-    float normalized = clamp((v_value-z_min)/(z_max-z_min), 0.0, 1.0);
+    float normalized = clamp((v_value-z_min)/(z_max-z_min), 0.01, 0.99);
     gl_FragColor = texture1D(u_colormap, normalized);
 }
 """
@@ -338,7 +338,10 @@ class Canvas(scene.SceneCanvas):
             # Display slope and inverse slope in status bar
             dx = x - x_start
             dy = y - y_start
-            text = 'Slope: {:.3e}\tInv: {:.3e}'.format(dy / dx, dx / dy)
+            text = 'dx = {}\tdy = {}\tdy/dx = {}\tdx/dy =  {}'.format(eng_format(dx, 2),
+                eng_format(dy, 2),
+                eng_format(dy / dx, 2),
+                eng_format(dx / dy, 2))
 
             self.parent.l_slope.setText(text)
 
